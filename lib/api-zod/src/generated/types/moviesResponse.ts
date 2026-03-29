@@ -5,7 +5,10 @@
  * KlikFilm Scraper API - Film & Anime
  * OpenAPI spec version: 0.2.0
  */
+import type { Movie } from "./movie";
 
-export interface HealthStatus {
-  status: string;
+export interface MoviesResponse {
+  movies: Movie[];
+  totalPages: number;
+  currentPage: number;
 }

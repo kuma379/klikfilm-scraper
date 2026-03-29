@@ -5,9 +5,9 @@
  * KlikFilm Scraper API - Film & Anime
  * OpenAPI spec version: 0.2.0
  */
-import type { MovieType } from "./movieType";
+import type { MovieDetailType } from "./movieDetailType";
 
-export interface Movie {
+export interface MovieDetail {
   title: string;
   slug: string;
   poster: string;
@@ -15,6 +15,13 @@ export interface Movie {
   rating?: string;
   genre?: string[];
   quality?: string;
-  type?: MovieType;
+  type?: MovieDetailType;
   url: string;
+  synopsis?: string;
+  duration?: string;
+  country?: string;
+  director?: string;
+  cast?: string[];
+  /** Direct video URLs (MP4/M3U8), ad-free */
+  streamUrls?: string[];
 }

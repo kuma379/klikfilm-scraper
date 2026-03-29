@@ -1,8 +1,8 @@
 openapi: 3.1.0
 info:
   title: Api
-  version: 0.1.0
-  description: KlikFilm Scraper API
+  version: 0.2.0
+  description: KlikFilm Scraper API - Film & Anime
 servers:
   - url: /api
     description: Base API path
@@ -10,7 +10,7 @@ tags:
   - name: health
     description: Health operations
   - name: movies
-    description: Movie scraper operations
+    description: Movie & Anime scraper operations
 paths:
   /healthz:
     get:
@@ -29,8 +29,8 @@ paths:
     get:
       operationId: getMovies
       tags: [movies]
-      summary: Get movies list
-      description: Scrape and return movies from klikfilm.web.id
+      summary: Get movies / anime list
+      description: Scrape and return films or anime from klikfilm.web.id
       parameters:
         - name: page
           in: query
@@ -38,6 +38,14 @@ paths:
           schema:
             type: integer
             default: 1
+        - name: type
+          in: query
+          required: false
+          description: Content type filter
+          schema:
+            type: string
+            enum: [film, anime, all]
+            default: all
         - name: genre
           in: query
           required: false
@@ -50,7 +58,7 @@ paths:
             type: string
       responses:
         "200":
-          description: List of movies
+          description: List of movies / anime
           content:
             application/json:
               schema:
@@ -65,23 +73,30 @@ paths:
     get:
       operationId: getMovieDetail
       tags: [movies]
-      summary: Get movie detail
-      description: Scrape and return detailed info for a specific movie
+      summary: Get movie / anime detail
+      description: Scrape and return detailed info, including direct video URLs without ads
       parameters:
         - name: slug
           in: path
           required: true
           schema:
             type: string
+        - name: resolveVideo
+          in: query
+          required: false
+          description: Resolve direct video URLs (bypasses ad redirects). Default true.
+          schema:
+            type: boolean
+            default: true
       responses:
         "200":
-          description: Movie detail
+          description: Movie / anime detail with direct stream URLs
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/MovieDetail"
         "404":
-          description: Movie not found
+          description: Not found
           content:
             application/json:
               schema:
@@ -97,7 +112,7 @@ paths:
       operationId: getGenres
       tags: [movies]
       summary: Get available genres
-      description: Returns list of genres from klikfilm.web.id
+      description: Returns list of genres scraped from klikfilm.web.id
       responses:
         "200":
           description: List of genres
@@ -105,6 +120,19 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GenresResponse"
+  /scraper/status:
+    get:
+      operationId: getScraperStatus
+      tags: [movies]
+      summary: Get daily scraper status
+      description: Returns the last run time and next scheduled run for the daily scraper
+      responses:
+        "200":
+          description: Scraper status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScraperStatus"
 components:
   schemas:
     HealthStatus:
@@ -133,6 +161,9 @@ components:
             type: string
         quality:
           type: string
+        type:
+          type: string
+          enum: [film, anime, all]
         url:
           type: string
       required:
@@ -159,6 +190,9 @@ components:
             type: string
         quality:
           type: string
+        type:
+          type: string
+          enum: [film, anime, all]
         url:
           type: string
         synopsis:
@@ -177,6 +211,7 @@ components:
           type: array
           items:
             type: string
+          description: Direct video URLs (MP4/M3U8), ad-free
       required:
         - title
         - slug
@@ -206,6 +241,27 @@ components:
             type: string
       required:
         - genres
+    ScraperStatus:
+      type: object
+      properties:
+        lastRunAt:
+          type: string
+          nullable: true
+        lastRunResult:
+          type: object
+          nullable: true
+          properties:
+            films:
+              type: integer
+            anime:
+              type: integer
+        isRunning:
+          type: boolean
+        nextRunAt:
+          type: string
+      required:
+        - isRunning
+        - nextRunAt
     ErrorResponse:
       type: object
       properties:
