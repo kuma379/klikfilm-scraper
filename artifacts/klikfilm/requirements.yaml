@@ -1,0 +1,13 @@
+packages:
+  "framer-motion": "For cinematic page transitions, card hover effects, and smooth layout animations"
+  "clsx": "For conditional class name joining"
+  "tailwind-merge": "For merging Tailwind utility classes without conflicts"
+
+images:
+  - path: "artifacts/klikfilm/public/images/hero-bg.png"
+    description: "Dark, cinematic abstract background, deep blacks with subtle cinematic gold and amber light leaks, elegant and premium atmosphere"
+    aspect_ratio: "21:9"
+
+notes:
+  - "App uses generated React Query hooks from @workspace/api-client-react for data fetching"
+  - "Theme heavily relies on CSS variables defined in index.css for the dark cinematic look"
