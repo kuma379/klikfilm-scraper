@@ -15,7 +15,6 @@ const RSC_HEADERS: Record<string, string> = {
   ...HEADERS,
   RSC: "1",
   Accept: "text/x-component",
-  "Next-Router-Prefetch": "1",
 };
 
 const http = axios.create({
@@ -334,14 +333,19 @@ export async function scrapeMovieDetail(
       ? extractRscContent(htmlRes.value.data as string)
       : "";
 
-  // Extract title from RSC h1 or page <title>
-  const titleMatch = rsc.match(/"h1",null,\{"[^}]*"children":\["([^"]{2,120})"/);
-  if (titleMatch) title = titleMatch[1];
-  if (!title && htmlRes.status === "fulfilled") {
+  // Extract title from <title> tag (most reliable)
+  if (htmlRes.status === "fulfilled") {
     const rawHtml = htmlRes.value.data as string;
-    const metaTitle = rawHtml.match(/<title>([^<]{3,100}) (?:Sub Indo|Subtitle|Episode|–)/);
-    if (metaTitle) title = metaTitle[1];
+    // Pattern: "Movie Title | KlikFilm" or "Title Sub Indo | KlikFilm"
+    const fullTitle = rawHtml.match(/<title>([^<]{3,200})<\/title>/);
+    if (fullTitle) {
+      title = fullTitle[1]
+        .replace(/\s*\|\s*KlikFilm.*$/i, "")
+        .replace(/\s+Sub(?:title)? Indo.*$/i, "")
+        .trim();
+    }
   }
+  // Fallback: use slug
   if (!title) {
     const pathSeg = watchUrl.split("/").pop() || slugOrUrl;
     title = pathSeg
