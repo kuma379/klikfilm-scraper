@@ -58,7 +58,7 @@ export default function Home() {
               transition={{ delay: 0.1 }}
               className="text-lg md:text-xl text-white/80 max-w-2xl mx-auto font-medium"
             >
-              Streaming ribuan film dan anime pilihan. Update otomatis setiap hari dari klikfilm.web.id.
+              Streaming ribuan film dan anime pilihan. Konten diperbarui otomatis setiap hari.
             </motion.p>
           </div>
         </section>
